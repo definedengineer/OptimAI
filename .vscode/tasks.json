@@ -1,0 +1,20 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "OptimAI: Run Daily Digest",
+      "type": "shell",
+      "command": "export $(cat .env | xargs) && python3 daily-digest/digest_generator.py",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true,
+        "tabName": "OptimAI Digest"
+      },
+      "problemMatcher": []
+    }
+  ]
+}
