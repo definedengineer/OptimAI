@@ -3,88 +3,140 @@
 ## What This Does
 
 Every morning at 6am, this system:
-1. Pulls the latest AI news (Claude, OpenAI, Microsoft priority)
-2. Generates 5-7 curated updates
+1. Fetches live AI news via Google News RSS + tech publication feeds
+2. Generates 5-7 curated updates (Claude/Anthropic, OpenAI, Microsoft priority)
 3. Writes a TikTok on-camera script
 4. Creates a LinkedIn value post
 5. Produces 7 ready-to-post tweets
 6. Drafts a full newsletter email
+7. **Emails the full styled digest to your inbox** (optional)
 
 Output files land in `content/YYYY-MM-DD_digest.md` (readable) and `.json` (structured).
 
 ---
 
-## Requirements
+## 1. Install Dependencies
 
 ```bash
-pip install anthropic
-export ANTHROPIC_API_KEY=your_key_here
+pip install -r daily-digest/requirements.txt
 ```
 
 ---
 
-## Run Manually
+## 2. Configure API Keys & Email
+
+Create a `.env` file in the repo root (already in `.gitignore`):
 
 ```bash
-cd /home/user/OptimAI
+# Required
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Optional — enables email delivery
+EMAIL_FROM=youremail@gmail.com
+EMAIL_TO=youremail@gmail.com
+EMAIL_PASSWORD=your_gmail_app_password
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+```
+
+### Gmail App Password Setup
+1. Go to [myaccount.google.com/security](https://myaccount.google.com/security)
+2. Enable **2-Step Verification**
+3. Search for **"App passwords"** → create one for "Mail"
+4. Use that 16-char password as `EMAIL_PASSWORD` (not your regular password)
+
+---
+
+## 3. Run Manually
+
+```bash
+# Generate digest only
 python3 daily-digest/digest_generator.py
+
+# Generate + email to yourself
+python3 daily-digest/digest_generator.py --email
+
+# Use a custom news file
+python3 daily-digest/digest_generator.py --news my_news.txt --email
+
+# Override date
+python3 daily-digest/digest_generator.py --date "May 7, 2026"
 ```
 
 ---
 
-## Schedule at 6am Daily (Cron)
+## 4. Schedule at 6am Daily (Cron)
 
 ```bash
 crontab -e
 ```
 
-Add this line:
+**Generate + email every day at 6am:**
 ```
-0 6 * * * cd /home/user/OptimAI && ANTHROPIC_API_KEY=your_key_here python3 daily-digest/digest_generator.py >> daily-digest/logs/digest.log 2>&1
+0 6 * * * /home/user/OptimAI/daily-digest/run_digest.sh --email
 ```
 
-Or use the shell wrapper (which also logs):
+**Generate only (no email), save to files:**
 ```
-0 6 * * * ANTHROPIC_API_KEY=your_key_here /home/user/OptimAI/daily-digest/run_digest.sh
+0 6 * * * /home/user/OptimAI/daily-digest/run_digest.sh
 ```
 
 ---
 
-## Content Niche: AI / OptimAI
+## 5. News Sources (Live RSS)
 
-Priority coverage order:
-1. Anthropic / Claude
-2. OpenAI / ChatGPT
-3. Microsoft AI
-4. Google DeepMind / Gemini
-5. Meta AI / Llama
-6. AI tools, agents, automation trends
+Priority order for news fetching:
+| Priority | Source |
+|----------|--------|
+| 1 | Claude / Anthropic (Google News RSS) |
+| 2 | OpenAI / ChatGPT (Google News RSS) |
+| 3 | Microsoft AI / Copilot (Google News RSS) |
+| 3 | TechCrunch AI feed |
+| 3 | The Verge AI feed |
+| 4 | Google Gemini / DeepMind |
+| 5 | Meta AI / Llama |
+| 6 | AI tools, agents, automation |
+
+If live fetch fails, the system falls back to Claude's knowledge of recent events.
 
 ---
 
-## Customizing News Input
+## 6. Custom News Input
 
-To feed your own curated news (e.g., from RSS, newsletters, or manual curation):
+To curate your own news and feed it in:
 
 ```bash
-python3 daily-digest/digest_generator.py --news my_news.txt
-```
+# Create a text file with your news items
+cat > my_news.txt << 'EOF'
+1. [CLAUDE/ANTHROPIC] Anthropic releases Claude 5 with...
+2. [OPENAI] OpenAI announces...
+EOF
 
-Or edit `load_news_items()` in `digest_generator.py` to hook into a news API.
+python3 daily-digest/digest_generator.py --news my_news.txt --email
+```
 
 ---
 
-## Output Structure
+## 7. Output Structure
 
 ```
 daily-digest/
-├── digest_generator.py     # Main generator script
+├── digest_generator.py     # Main generator
+├── news_fetcher.py         # Live RSS news fetcher
 ├── run_digest.sh           # Shell wrapper for cron
 ├── requirements.txt
-├── SETUP.md                # This file
+├── SETUP.md
 ├── logs/
 │   └── digest.log
 └── content/
-    ├── 2026-05-05_digest.md   # Human-readable
-    └── 2026-05-05_digest.json # Structured data
+    ├── 2026-05-07_digest.md   # Human-readable full digest
+    └── 2026-05-07_digest.json # Structured data
 ```
+
+---
+
+## 8. Content Niche: AI / OptimAI
+
+Brand: Helps creators, entrepreneurs, and professionals use AI to optimize their work and life.
+
+Tone: Confident, energetic, clear. Smart friend who's always ahead on AI news.

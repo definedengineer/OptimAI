@@ -1,6 +1,12 @@
 #!/bin/bash
 # OptimAI Daily Digest Runner — scheduled via cron at 6am
-# Cron entry: 0 6 * * * /home/user/OptimAI/daily-digest/run_digest.sh
+#
+# Usage:
+#   run_digest.sh              # generate only
+#   run_digest.sh --email      # generate + email to EMAIL_TO
+#
+# Cron entry (generate + email at 6am daily):
+#   0 6 * * * /home/user/OptimAI/daily-digest/run_digest.sh --email
 
 set -e
 
@@ -11,9 +17,12 @@ ENV_FILE="$REPO_DIR/.env"
 
 mkdir -p "$LOG_DIR"
 
-# Load API key from .env
+# Load .env for cron (cron doesn't inherit shell env)
 if [ -f "$ENV_FILE" ]; then
-  export $(grep -v '^#' "$ENV_FILE" | xargs)
+  set -a
+  # shellcheck disable=SC1090
+  source "$ENV_FILE"
+  set +a
 fi
 
 if [ -z "$ANTHROPIC_API_KEY" ]; then
@@ -24,6 +33,6 @@ fi
 echo "[$(date)] Starting OptimAI Daily Digest..." | tee -a "$LOG_DIR/digest.log"
 
 cd "$REPO_DIR"
-python3 daily-digest/digest_generator.py 2>&1 | tee -a "$LOG_DIR/digest.log"
+python3 daily-digest/digest_generator.py "$@" 2>&1 | tee -a "$LOG_DIR/digest.log"
 
 echo "[$(date)] Digest complete." | tee -a "$LOG_DIR/digest.log"
