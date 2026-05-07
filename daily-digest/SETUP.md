@@ -135,8 +135,27 @@ daily-digest/
 
 ---
 
-## 8. Content Niche: AI / OptimAI
+## 8. Content Niche
 
-Brand: Helps creators, entrepreneurs, and professionals use AI to optimize their work and life.
+**Who:** Mid-market manufacturing leaders — plant managers, engineering directors, capital project
+managers at $50M–$500M companies in pharma, food, and chemical sectors.
 
-Tone: Confident, energetic, clear. Smart friend who's always ahead on AI news.
+**What:** Translate AI tools into practical applications for capital project execution, plant
+engineering, and maintenance operations. Bridge the gap between AI hype and the reality of
+FDA-regulated environments, PSM/PHA, SAP PM, and the daily grind of running a manufacturing site.
+
+**How:** A 25-year process and capital project engineer (Lilly, Emergent, Nestlé, Bunge, Cabot)
+who actually builds with the tools — Make.com automations, no-code apps, Claude Code, AI video,
+custom GPTs. Not a consultant talking about AI from the outside.
+
+**Angle:** "AI vs. My Actual Job." Show what works, what fails, and what breaks when you point
+modern AI at real engineering problems. Self-deprecating humor on top of deep technical credibility.
+
+**Four content lanes:**
+1. AI tools and updates with direct manufacturing or capital project use cases
+2. Regulatory and compliance signals (FDA AI guidance, GxP, PSM/PHA, EU AI Act)
+3. Mid-market manufacturing trends (capex cycles, reshoring, labor, OEE benchmarks)
+4. Practical workflow experiments and case studies from peers who've shipped something
+
+**Tone:** Direct, technically credible, occasionally self-deprecating. Written by someone who has
+run a P&ID review at 11pm. No hype. No motivational filler. Real signal for plant floor leaders.

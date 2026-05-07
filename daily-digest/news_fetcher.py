@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 """
-Live AI news fetcher for OptimAI Daily Digest.
-Pulls from Google News RSS + major tech publication feeds.
-Priority: Claude/Anthropic > OpenAI > Microsoft > Google > Meta > General AI
+Live news fetcher for OptimAI Daily Digest.
+Niche: AI tools for mid-market manufacturing leaders in pharma, food, and chemical sectors.
+
+Four content lanes:
+  1. AI tools with manufacturing / capital project use cases (Claude, OpenAI, Microsoft)
+  2. Regulatory & compliance signals (FDA AI guidance, GxP, PSM, EU AI Act)
+  3. Mid-market manufacturing trends (capex, reshoring, labor, OEE)
+  4. Workflow experiments & case studies (no-code AI, Make.com, shipped solutions)
 """
 
 import re
@@ -23,53 +28,128 @@ except ImportError:
     HAS_URLLIB = False
 
 
-# Google News RSS searches — no API key required
-GOOGLE_NEWS_FEEDS = [
+# ── LANE 1: AI Tools with Manufacturing / Capital Project Use Cases ──────────
+LANE1_AI_TOOLS = [
     {
         "label": "CLAUDE/ANTHROPIC",
-        "url": "https://news.google.com/rss/search?q=Claude+Anthropic+AI&hl=en-US&gl=US&ceid=US:en",
+        "url": "https://news.google.com/rss/search?q=Claude+Anthropic+AI+engineering+manufacturing&hl=en-US&gl=US&ceid=US:en",
         "priority": 1,
     },
     {
-        "label": "OPENAI",
-        "url": "https://news.google.com/rss/search?q=OpenAI+GPT+ChatGPT&hl=en-US&gl=US&ceid=US:en",
+        "label": "OPENAI INDUSTRIAL",
+        "url": "https://news.google.com/rss/search?q=OpenAI+GPT+manufacturing+enterprise+workflow&hl=en-US&gl=US&ceid=US:en",
         "priority": 2,
     },
     {
-        "label": "MICROSOFT AI",
-        "url": "https://news.google.com/rss/search?q=Microsoft+AI+Copilot&hl=en-US&gl=US&ceid=US:en",
+        "label": "MICROSOFT AI OPS",
+        "url": "https://news.google.com/rss/search?q=Microsoft+Copilot+SAP+industrial+AI&hl=en-US&gl=US&ceid=US:en",
+        "priority": 2,
+    },
+    {
+        "label": "AI MANUFACTURING TOOLS",
+        "url": "https://news.google.com/rss/search?q=AI+tools+manufacturing+operations+automation&hl=en-US&gl=US&ceid=US:en",
         "priority": 3,
-    },
-    {
-        "label": "GOOGLE AI",
-        "url": "https://news.google.com/rss/search?q=Google+Gemini+DeepMind+AI&hl=en-US&gl=US&ceid=US:en",
-        "priority": 4,
-    },
-    {
-        "label": "META AI",
-        "url": "https://news.google.com/rss/search?q=Meta+AI+Llama+model&hl=en-US&gl=US&ceid=US:en",
-        "priority": 5,
-    },
-    {
-        "label": "AI TOOLS",
-        "url": "https://news.google.com/rss/search?q=AI+tools+automation+agents+2026&hl=en-US&gl=US&ceid=US:en",
-        "priority": 6,
     },
 ]
 
-# Tech publication AI feeds
-PUBLICATION_FEEDS = [
+# ── LANE 2: Regulatory & Compliance Signals ───────────────────────────────────
+LANE2_REGULATORY = [
     {
-        "label": "TechCrunch AI",
-        "url": "https://techcrunch.com/tag/artificial-intelligence/feed/",
+        "label": "FDA AI GUIDANCE",
+        "url": "https://news.google.com/rss/search?q=FDA+AI+artificial+intelligence+guidance+pharma&hl=en-US&gl=US&ceid=US:en",
+        "priority": 2,
+    },
+    {
+        "label": "GXP / COMPLIANCE",
+        "url": "https://news.google.com/rss/search?q=GxP+validation+AI+21+CFR+Annex+11+manufacturing&hl=en-US&gl=US&ceid=US:en",
+        "priority": 2,
+    },
+    {
+        "label": "PSM / PROCESS SAFETY",
+        "url": "https://news.google.com/rss/search?q=PSM+PHA+process+safety+AI+chemical+pharma&hl=en-US&gl=US&ceid=US:en",
         "priority": 3,
     },
     {
-        "label": "The Verge AI",
-        "url": "https://www.theverge.com/ai-artificial-intelligence/rss/index.xml",
+        "label": "EU AI ACT INDUSTRIAL",
+        "url": "https://news.google.com/rss/search?q=EU+AI+Act+manufacturing+regulated+industry&hl=en-US&gl=US&ceid=US:en",
         "priority": 3,
     },
 ]
+
+# ── LANE 3: Mid-Market Manufacturing Trends ───────────────────────────────────
+LANE3_MANUFACTURING = [
+    {
+        "label": "PHARMA MANUFACTURING",
+        "url": "https://news.google.com/rss/search?q=pharma+manufacturing+capital+projects+AI&hl=en-US&gl=US&ceid=US:en",
+        "priority": 2,
+    },
+    {
+        "label": "FOOD & CHEMICAL MFG",
+        "url": "https://news.google.com/rss/search?q=food+chemical+manufacturing+operations+AI+automation&hl=en-US&gl=US&ceid=US:en",
+        "priority": 3,
+    },
+    {
+        "label": "CAPEX & RESHORING",
+        "url": "https://news.google.com/rss/search?q=manufacturing+reshoring+capex+capital+projects+2026&hl=en-US&gl=US&ceid=US:en",
+        "priority": 3,
+    },
+    {
+        "label": "OEE & WORKFORCE",
+        "url": "https://news.google.com/rss/search?q=OEE+manufacturing+workforce+labor+maintenance+AI&hl=en-US&gl=US&ceid=US:en",
+        "priority": 4,
+    },
+]
+
+# ── LANE 4: Workflow Experiments & Case Studies ───────────────────────────────
+LANE4_WORKFLOWS = [
+    {
+        "label": "AI WORKFLOW CASE STUDIES",
+        "url": "https://news.google.com/rss/search?q=AI+workflow+automation+manufacturing+case+study&hl=en-US&gl=US&ceid=US:en",
+        "priority": 3,
+    },
+    {
+        "label": "NO-CODE AI TOOLS",
+        "url": "https://news.google.com/rss/search?q=Make.com+n8n+no-code+AI+automation+engineering&hl=en-US&gl=US&ceid=US:en",
+        "priority": 4,
+    },
+    {
+        "label": "SAP PM AI",
+        "url": "https://news.google.com/rss/search?q=SAP+PM+maintenance+AI+plant+engineering&hl=en-US&gl=US&ceid=US:en",
+        "priority": 3,
+    },
+]
+
+# ── Trade Publication Feeds ───────────────────────────────────────────────────
+PUBLICATION_FEEDS = [
+    {
+        "label": "Pharma Manufacturing",
+        "url": "https://www.pharmamanufacturing.com/rss/",
+        "priority": 2,
+    },
+    {
+        "label": "Chemical Engineering",
+        "url": "https://www.chemengonline.com/feed/",
+        "priority": 2,
+    },
+    {
+        "label": "Food Engineering",
+        "url": "https://www.foodengineeringmag.com/rss/content",
+        "priority": 3,
+    },
+    {
+        "label": "Plant Engineering",
+        "url": "https://www.plantengineering.com/rss/",
+        "priority": 2,
+    },
+    {
+        "label": "Control Global",
+        "url": "https://www.controlglobal.com/rss/",
+        "priority": 3,
+    },
+]
+
+# All feeds in one list for the fetcher
+GOOGLE_NEWS_FEEDS = LANE1_AI_TOOLS + LANE2_REGULATORY + LANE3_MANUFACTURING + LANE4_WORKFLOWS
 
 
 def _clean_html(text: str) -> str:

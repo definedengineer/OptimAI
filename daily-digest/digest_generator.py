@@ -31,13 +31,30 @@ from news_fetcher import get_live_news
 CONTENT_DIR = Path(__file__).parent / "content"
 CONTENT_DIR.mkdir(exist_ok=True)
 
-SYSTEM_PROMPT = """You are the content strategist for OptimAI — a brand that helps creators,
-entrepreneurs, and professionals use AI to optimize their work and life.
-Your audience follows AI trends closely and wants to stay ahead of the curve.
-They are action-oriented, ambitious, and love practical insights over hype.
+SYSTEM_PROMPT = """You are the content strategist for OptimAI — run by a 25-year process and capital
+project engineer (experience at Lilly, Emergent, Nestlé, Bunge, Cabot) who builds AI tools
+inside the same workflows his audience runs.
 
-Tone: Confident, energetic, clear. No fluff. Real value every time.
-Brand voice: Smart friend who's always ahead on AI news, not a corporate newsletter."""
+AUDIENCE: Mid-market manufacturing leaders — plant managers, engineering directors, and capital
+project managers at $50M–$500M companies in pharma, food, and chemical sectors. They run
+regulated facilities, manage capital portfolios, and feel pressure to adopt AI without enterprise
+budgets or dedicated data science teams.
+
+BRAND ANGLE: "AI vs. My Actual Job." Show what works, what fails, and what breaks when you point
+modern AI at real engineering problems — FDA-regulated environments, PSM/PHA requirements, SAP PM,
+capital project execution, and plant maintenance operations. Self-deprecating humor on top of deep
+technical credibility. Give peers the filtered signal so they don't have to wade through generic
+AI content written for marketers and software teams.
+
+CONTENT LANES:
+1. AI tools and updates with direct manufacturing or capital project use cases
+2. Regulatory and compliance signals (FDA AI guidance, GxP implications, PSM updates)
+3. Mid-market manufacturing trends (capex cycles, reshoring, labor, OEE benchmarks)
+4. Practical workflow experiments and case studies from peers who've shipped something
+
+Tone: Direct, technically credible, occasionally self-deprecating. Written by someone who has
+actually run a P&ID review at 11pm, not a consultant who read about it. No hype. No fluff.
+Real signal for people who are too busy to filter noise."""
 
 DIGEST_PROMPT = """
 Based on the latest AI news as of {date}, generate a complete daily content package for OptimAI.
@@ -94,32 +111,55 @@ Generate the following, using exactly this JSON structure:
 }}
 
 Requirements:
-- news_updates: exactly 5-7 items, prioritizing Claude/Anthropic, OpenAI, Microsoft
-- tweets: exactly 7 tweets, varied types
-- All content should feel cohesive — like a single themed edition
-- Write everything as if publishing TODAY
+- news_updates: exactly 5-7 items, covering all 4 lanes — AI tools first, then regulatory,
+  manufacturing trends, and workflow/case studies. Always include at least one regulatory or
+  compliance item and one manufacturing trend item.
+- tweets: exactly 7 tweets, varied types. Written for a manufacturing/engineering audience,
+  not a general tech audience. Avoid startup or VC culture references.
+- TikTok script: written to be read on camera by a plant engineer, not a tech influencer.
+  Use shop-floor language, specific job titles, real regulatory acronyms (PSM, PHA, GxP, MOC).
+  Hook should reference a real pain point the audience lives with.
+- LinkedIn post: peer-to-peer tone. Write as if posted by the engineer, not a consultant.
+  Use "I tested this on a real project" framing where possible.
+- Newsletter: structured like a shift handoff — what happened, why it matters to your plant,
+  what to do about it. No motivational filler.
+- All content should feel like it came from someone who has actually run a capital project or
+  managed a regulated facility, not someone who read about it online.
+- Write everything as if publishing TODAY.
 """
 
 DEFAULT_NEWS_TEMPLATE = """
-CURATED AI NEWS FOR {date}:
+CURATED NEWS FOR OPTIMAI — {date}:
 
-1. [CLAUDE/ANTHROPIC] Latest updates from Anthropic on Claude models, features, partnerships, and safety research.
+LANE 1 — AI TOOLS WITH MANUFACTURING / CAPITAL PROJECT USE CASES:
+1. [CLAUDE/ANTHROPIC] Latest Claude model updates, agent capabilities, or enterprise features
+   relevant to engineering workflows, document processing, or regulated industries.
 
-2. [OPENAI] Latest developments from OpenAI including model releases, product updates, and business moves.
+2. [OPENAI] GPT model or tooling updates with direct application to manufacturing, maintenance,
+   or capital project documentation (spec generation, RFQ processing, MOC workflows).
 
-3. [MICROSOFT AI] Microsoft Copilot, Azure AI, and enterprise AI integration news.
+3. [MICROSOFT AI] Copilot for engineering or industrial use cases — SAP integration, Teams,
+   Azure AI in plant/OT environments.
 
-4. [GOOGLE AI] Gemini, DeepMind research, and Google's AI product updates.
+LANE 2 — REGULATORY & COMPLIANCE SIGNALS:
+4. [REGULATORY] FDA AI/ML guidance updates, GxP validation implications, EU AI Act impact on
+   pharma manufacturing, PSM/PHA digital tool approvals, or 21 CFR Part 11 / Annex 11 news.
 
-5. [META AI] Meta's Llama models, AI research, and product integrations.
+LANE 3 — MID-MARKET MANUFACTURING TRENDS:
+5. [MANUFACTURING] Capex cycle news, reshoring announcements, labor/workforce trends,
+   OEE benchmarks, or supply chain shifts in pharma, food, or chemical sectors.
 
-6. [AI TOOLS] Emerging AI tools, agent frameworks, and automation trends shaping workflows.
+LANE 4 — WORKFLOW EXPERIMENTS & CASE STUDIES:
+6. [WORKFLOW] A published case study, LinkedIn post, or trade article where someone at a
+   mid-market manufacturer has actually shipped an AI workflow — maintenance, scheduling,
+   procurement, engineering docs, or safety reviews.
 
-7. [AI BUSINESS] Enterprise AI adoption, funding rounds, and market shifts.
+7. [TOOLS] A specific no-code/low-code AI tool update (Make.com, n8n, Claude Code, custom GPTs,
+   AI video) relevant to engineering or operations teams with no dedicated data science support.
 
-NOTE TO AI: Use your knowledge of recent events up to your training cutoff to fill in
-the most newsworthy real stories for each category above. Be specific with company names,
-model versions, and actual announcements — do not fabricate details.
+NOTE TO AI: Use your knowledge of recent events up to your training cutoff to fill in the most
+newsworthy real stories per lane. Be specific — model versions, regulatory docket numbers,
+company names, sector. Do not fabricate details.
 """
 
 
